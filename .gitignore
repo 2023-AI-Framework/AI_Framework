@@ -1,0 +1,9 @@
+*.pyn
+
+__pycache__
+venv
+wandb
+dataset
+test.py
+data
+legacy

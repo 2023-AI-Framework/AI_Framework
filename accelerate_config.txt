@@ -1,0 +1,328 @@
+usage: accelerate <command> [<args>] launch [-h] [--config_file CONFIG_FILE]
+                                            [--quiet] [--cpu] [--multi_gpu]
+                                            [--tpu] [--ipex]
+                                            [--mixed_precision {no,fp16,bf16,fp8}]
+                                            [--num_processes NUM_PROCESSES]
+                                            [--num_machines NUM_MACHINES]
+                                            [--num_cpu_threads_per_process NUM_CPU_THREADS_PER_PROCESS]
+                                            [--dynamo_backend {no,eager,aot_eager,inductor,aot_ts_nvfuser,nvprims_nvfuser,cudagraphs,ofi,fx2trt,onnxrt,tensorrt,ipex,tvm}]
+                                            [--dynamo_mode {default,reduce-overhead,max-autotune}]
+                                            [--dynamo_use_fullgraph]
+                                            [--dynamo_use_dynamic]
+                                            [--use_deepspeed] [--use_fsdp]
+                                            [--use_megatron_lm] [--use_xpu]
+                                            [--gpu_ids GPU_IDS]
+                                            [--same_network]
+                                            [--machine_rank MACHINE_RANK]
+                                            [--main_process_ip MAIN_PROCESS_IP]
+                                            [--main_process_port MAIN_PROCESS_PORT]
+                                            [-t TEE] [--role ROLE]
+                                            [--rdzv_backend RDZV_BACKEND]
+                                            [--rdzv_conf RDZV_CONF]
+                                            [--max_restarts MAX_RESTARTS]
+                                            [--monitor_interval MONITOR_INTERVAL]
+                                            [-m] [--no_python] [--tpu_cluster]
+                                            [--no_tpu_cluster]
+                                            [--tpu_use_sudo] [--vm VM]
+                                            [--env ENV]
+                                            [--main_training_function MAIN_TRAINING_FUNCTION]
+                                            [--downcast_bf16]
+                                            [--deepspeed_config_file DEEPSPEED_CONFIG_FILE]
+                                            [--zero_stage ZERO_STAGE]
+                                            [--offload_optimizer_device OFFLOAD_OPTIMIZER_DEVICE]
+                                            [--offload_param_device OFFLOAD_PARAM_DEVICE]
+                                            [--offload_optimizer_nvme_path OFFLOAD_OPTIMIZER_NVME_PATH]
+                                            [--offload_param_nvme_path OFFLOAD_PARAM_NVME_PATH]
+                                            [--gradient_accumulation_steps GRADIENT_ACCUMULATION_STEPS]
+                                            [--gradient_clipping GRADIENT_CLIPPING]
+                                            [--zero3_init_flag ZERO3_INIT_FLAG]
+                                            [--zero3_save_16bit_model ZERO3_SAVE_16BIT_MODEL]
+                                            [--deepspeed_hostfile DEEPSPEED_HOSTFILE]
+                                            [--deepspeed_exclusion_filter DEEPSPEED_EXCLUSION_FILTER]
+                                            [--deepspeed_inclusion_filter DEEPSPEED_INCLUSION_FILTER]
+                                            [--deepspeed_multinode_launcher DEEPSPEED_MULTINODE_LAUNCHER]
+                                            [--fsdp_offload_params FSDP_OFFLOAD_PARAMS]
+                                            [--fsdp_min_num_params FSDP_MIN_NUM_PARAMS]
+                                            [--fsdp_sharding_strategy FSDP_SHARDING_STRATEGY]
+                                            [--fsdp_auto_wrap_policy FSDP_AUTO_WRAP_POLICY]
+                                            [--fsdp_transformer_layer_cls_to_wrap FSDP_TRANSFORMER_LAYER_CLS_TO_WRAP]
+                                            [--fsdp_backward_prefetch_policy FSDP_BACKWARD_PREFETCH_POLICY]
+                                            [--fsdp_state_dict_type FSDP_STATE_DICT_TYPE]
+                                            [--fsdp_forward_prefetch FSDP_FORWARD_PREFETCH]
+                                            [--fsdp_use_orig_params FSDP_USE_ORIG_PARAMS]
+                                            [--fsdp_cpu_ram_efficient_loading FSDP_CPU_RAM_EFFICIENT_LOADING]
+                                            [--fsdp_sync_module_states FSDP_SYNC_MODULE_STATES]
+                                            [--megatron_lm_tp_degree MEGATRON_LM_TP_DEGREE]
+                                            [--megatron_lm_pp_degree MEGATRON_LM_PP_DEGREE]
+                                            [--megatron_lm_num_micro_batches MEGATRON_LM_NUM_MICRO_BATCHES]
+                                            [--megatron_lm_sequence_parallelism MEGATRON_LM_SEQUENCE_PARALLELISM]
+                                            [--megatron_lm_recompute_activations MEGATRON_LM_RECOMPUTE_ACTIVATIONS]
+                                            [--megatron_lm_use_distributed_optimizer MEGATRON_LM_USE_DISTRIBUTED_OPTIMIZER]
+                                            [--megatron_lm_gradient_clipping MEGATRON_LM_GRADIENT_CLIPPING]
+                                            [--aws_access_key_id AWS_ACCESS_KEY_ID]
+                                            [--aws_secret_access_key AWS_SECRET_ACCESS_KEY]
+                                            [--debug]
+                                            training_script ...
+
+positional arguments:
+  training_script       The full path to the script to be launched in
+                        parallel, followed by all the arguments for the
+                        training script.
+  training_script_args  Arguments of the training script.
+
+options:
+  -h, --help            Show this help message and exit.
+  --config_file CONFIG_FILE
+                        The config file to use for the default values in the
+                        launching script.
+  --quiet, -q           Silence subprocess errors from the launch stack trace
+                        and only show the relevant tracebacks. (Only
+                        applicable to DeepSpeed and single-process
+                        configurations)
+  -m, --module          Change each process to interpret the launch script as
+                        a Python module, executing with the same behavior as
+                        'python -m'.
+  --no_python           Skip prepending the training script with 'python' -
+                        just execute it directly. Useful when the script is
+                        not a Python script.
+  --debug               Whether to print out the torch.distributed stack trace
+                        when something fails.
+
+Hardware Selection Arguments:
+  Arguments for selecting the hardware to be used.
+
+  --cpu                 Whether or not to force the training on the CPU.
+  --multi_gpu           Whether or not this should launch a distributed GPU
+                        training.
+  --tpu                 Whether or not this should launch a TPU training.
+  --ipex                Whether or not this should launch a Intel PyTorch
+                        Extension (IPEX) training.
+
+Resource Selection Arguments:
+  Arguments for fine-tuning how available hardware should be used.
+
+  --mixed_precision {no,fp16,bf16,fp8}
+                        Whether or not to use mixed precision training. Choose
+                        between FP16 and BF16 (bfloat16) training. BF16
+                        training is only supported on Nvidia Ampere GPUs and
+                        PyTorch 1.10 or later.
+  --num_processes NUM_PROCESSES
+                        The total number of processes to be launched in
+                        parallel.
+  --num_machines NUM_MACHINES
+                        The total number of machines used in this training.
+  --num_cpu_threads_per_process NUM_CPU_THREADS_PER_PROCESS
+                        The number of CPU threads per process. Can be tuned
+                        for optimal performance.
+  --dynamo_backend {no,eager,aot_eager,inductor,aot_ts_nvfuser,nvprims_nvfuser,cudagraphs,ofi,fx2trt,onnxrt,tensorrt,ipex,tvm}
+                        Choose a backend to optimize your training with
+                        dynamo, see more at
+                        https://github.com/pytorch/torchdynamo.
+  --dynamo_mode {default,reduce-overhead,max-autotune}
+                        Choose a mode to optimize your training with dynamo.
+  --dynamo_use_fullgraph
+                        Whether to use full graph mode for dynamo or it is ok
+                        to break model into several subgraphs
+  --dynamo_use_dynamic  Whether to enable dynamic shape tracing.
+
+Training Paradigm Arguments:
+  Arguments for selecting which training paradigm to be used.
+
+  --use_deepspeed       Whether to use deepspeed.
+  --use_fsdp            Whether to use fsdp.
+  --use_megatron_lm     Whether to use Megatron-LM.
+  --use_xpu             Whether to use IPEX plugin to speed up training on XPU
+                        specifically.
+
+Distributed GPUs:
+  Arguments related to distributed GPU training.
+
+  --gpu_ids GPU_IDS     What GPUs (by id) should be used for training on this
+                        machine as a comma-seperated list
+  --same_network        Whether all machines used for multinode training exist
+                        on the same local network.
+  --machine_rank MACHINE_RANK
+                        The rank of the machine on which this script is
+                        launched.
+  --main_process_ip MAIN_PROCESS_IP
+                        The IP address of the machine of rank 0.
+  --main_process_port MAIN_PROCESS_PORT
+                        The port to use to communicate with the machine of
+                        rank 0.
+  -t TEE, --tee TEE     Tee std streams into a log file and also to console.
+  --role ROLE           User-defined role for the workers.
+  --rdzv_backend RDZV_BACKEND
+                        The rendezvous method to use, such as 'static' (the
+                        default) or 'c10d'
+  --rdzv_conf RDZV_CONF
+                        Additional rendezvous configuration
+                        (<key1>=<value1>,<key2>=<value2>,...).
+  --max_restarts MAX_RESTARTS
+                        Maximum number of worker group restarts before
+                        failing.
+  --monitor_interval MONITOR_INTERVAL
+                        Interval, in seconds, to monitor the state of workers.
+
+TPU:
+  Arguments related to TPU.
+
+  --tpu_cluster         Whether to use a GCP TPU pod for training.
+  --no_tpu_cluster      Should not be passed explicitly, this is for internal
+                        use only.
+  --tpu_use_sudo        Whether to use `sudo` when running the TPU training
+                        script in each pod.
+  --vm VM               List of single Compute VM instance names. If not
+                        provided we assume usage of instance groups. For TPU
+                        pods.
+  --env ENV             List of environment variables to set on the Compute VM
+                        instances. For TPU pods.
+  --main_training_function MAIN_TRAINING_FUNCTION
+                        The name of the main function to be executed in your
+                        script (only for TPU training).
+  --downcast_bf16       Whether when using bf16 precision on TPUs if both
+                        float and double tensors are cast to bfloat16 or if
+                        double tensors remain as float32.
+
+DeepSpeed Arguments:
+  Arguments related to DeepSpeed.
+
+  --deepspeed_config_file DEEPSPEED_CONFIG_FILE
+                        DeepSpeed config file.
+  --zero_stage ZERO_STAGE
+                        DeepSpeed's ZeRO optimization stage (useful only when
+                        `use_deepspeed` flag is passed). If unspecified, will
+                        default to `2`.
+  --offload_optimizer_device OFFLOAD_OPTIMIZER_DEVICE
+                        Decides where (none|cpu|nvme) to offload optimizer
+                        states (useful only when `use_deepspeed` flag is
+                        passed). If unspecified, will default to 'none'.
+  --offload_param_device OFFLOAD_PARAM_DEVICE
+                        Decides where (none|cpu|nvme) to offload parameters
+                        (useful only when `use_deepspeed` flag is passed). If
+                        unspecified, will default to 'none'.
+  --offload_optimizer_nvme_path OFFLOAD_OPTIMIZER_NVME_PATH
+                        Decides Nvme Path to offload optimizer states (useful
+                        only when `use_deepspeed` flag is passed). If
+                        unspecified, will default to 'none'.
+  --offload_param_nvme_path OFFLOAD_PARAM_NVME_PATH
+                        Decides Nvme Path to offload parameters (useful only
+                        when `use_deepspeed` flag is passed). If unspecified,
+                        will default to 'none'.
+  --gradient_accumulation_steps GRADIENT_ACCUMULATION_STEPS
+                        No of gradient_accumulation_steps used in your
+                        training script (useful only when `use_deepspeed` flag
+                        is passed). If unspecified, will default to `1`.
+  --gradient_clipping GRADIENT_CLIPPING
+                        gradient clipping value used in your training script
+                        (useful only when `use_deepspeed` flag is passed). If
+                        unspecified, will default to `1.0`.
+  --zero3_init_flag ZERO3_INIT_FLAG
+                        Decides Whether (true|false) to enable
+                        `deepspeed.zero.Init` for constructing massive models.
+                        Only applicable with DeepSpeed ZeRO Stage-3. If
+                        unspecified, will default to `true`.
+  --zero3_save_16bit_model ZERO3_SAVE_16BIT_MODEL
+                        Decides Whether (true|false) to save 16-bit model
+                        weights when using ZeRO Stage-3. Only applicable with
+                        DeepSpeed ZeRO Stage-3. If unspecified, will default
+                        to `false`.
+  --deepspeed_hostfile DEEPSPEED_HOSTFILE
+                        DeepSpeed hostfile for configuring multi-node compute
+                        resources.
+  --deepspeed_exclusion_filter DEEPSPEED_EXCLUSION_FILTER
+                        DeepSpeed exclusion filter string when using mutli-
+                        node setup.
+  --deepspeed_inclusion_filter DEEPSPEED_INCLUSION_FILTER
+                        DeepSpeed inclusion filter string when using mutli-
+                        node setup.
+  --deepspeed_multinode_launcher DEEPSPEED_MULTINODE_LAUNCHER
+                        DeepSpeed multi-node launcher to use. If unspecified,
+                        will default to `pdsh`.
+
+FSDP Arguments:
+  Arguments related to Fully Shared Data Parallelism.
+
+  --fsdp_offload_params FSDP_OFFLOAD_PARAMS
+                        Decides Whether (true|false) to offload parameters and
+                        gradients to CPU. (useful only when `use_fsdp` flag is
+                        passed).
+  --fsdp_min_num_params FSDP_MIN_NUM_PARAMS
+                        FSDP's minimum number of parameters for Default Auto
+                        Wrapping. (useful only when `use_fsdp` flag is
+                        passed).
+  --fsdp_sharding_strategy FSDP_SHARDING_STRATEGY
+                        FSDP's Sharding Strategy. (useful only when `use_fsdp`
+                        flag is passed).
+  --fsdp_auto_wrap_policy FSDP_AUTO_WRAP_POLICY
+                        FSDP's auto wrap policy. (useful only when `use_fsdp`
+                        flag is passed).
+  --fsdp_transformer_layer_cls_to_wrap FSDP_TRANSFORMER_LAYER_CLS_TO_WRAP
+                        Transformer layer class name (case-sensitive) to wrap
+                        ,e.g, `BertLayer`, `GPTJBlock`, `T5Block` .... (useful
+                        only when `use_fsdp` flag is passed).
+  --fsdp_backward_prefetch_policy FSDP_BACKWARD_PREFETCH_POLICY
+                        FSDP's backward prefetch policy. (useful only when
+                        `use_fsdp` flag is passed).
+  --fsdp_state_dict_type FSDP_STATE_DICT_TYPE
+                        FSDP's state dict type. (useful only when `use_fsdp`
+                        flag is passed).
+  --fsdp_forward_prefetch FSDP_FORWARD_PREFETCH
+                        If True, then FSDP explicitly prefetches the next
+                        upcoming all-gather while executing in the forward
+                        pass (useful only when `use_fsdp` flag is passed).
+  --fsdp_use_orig_params FSDP_USE_ORIG_PARAMS
+                        If True, allows non-uniform `requires_grad` during
+                        init, which means support for interspersed frozen and
+                        trainable paramteres. (useful only when `use_fsdp`
+                        flag is passed).
+  --fsdp_cpu_ram_efficient_loading FSDP_CPU_RAM_EFFICIENT_LOADING
+                        If True, only the first process loads the pretrained
+                        model checkoint while all other processes have empty
+                        weights. Only applicable for 🤗 Transformers. When
+                        using this, `--fsdp_sync_module_states` needs to True.
+                        (useful only when `use_fsdp` flag is passed).
+  --fsdp_sync_module_states FSDP_SYNC_MODULE_STATES
+                        If True, each individually wrapped FSDP unit will
+                        broadcast module parameters from rank 0. (useful only
+                        when `use_fsdp` flag is passed).
+
+Megatron-LM Arguments:
+  Arguments related to Megatron-LM.
+
+  --megatron_lm_tp_degree MEGATRON_LM_TP_DEGREE
+                        Megatron-LM's Tensor Parallelism (TP) degree. (useful
+                        only when `use_megatron_lm` flag is passed).
+  --megatron_lm_pp_degree MEGATRON_LM_PP_DEGREE
+                        Megatron-LM's Pipeline Parallelism (PP) degree.
+                        (useful only when `use_megatron_lm` flag is passed).
+  --megatron_lm_num_micro_batches MEGATRON_LM_NUM_MICRO_BATCHES
+                        Megatron-LM's number of micro batches when PP degree >
+                        1. (useful only when `use_megatron_lm` flag is
+                        passed).
+  --megatron_lm_sequence_parallelism MEGATRON_LM_SEQUENCE_PARALLELISM
+                        Decides Whether (true|false) to enable Sequence
+                        Parallelism when TP degree > 1. (useful only when
+                        `use_megatron_lm` flag is passed).
+  --megatron_lm_recompute_activations MEGATRON_LM_RECOMPUTE_ACTIVATIONS
+                        Decides Whether (true|false) to enable Selective
+                        Activation Recomputation. (useful only when
+                        `use_megatron_lm` flag is passed).
+  --megatron_lm_use_distributed_optimizer MEGATRON_LM_USE_DISTRIBUTED_OPTIMIZER
+                        Decides Whether (true|false) to use distributed
+                        optimizer which shards optimizer state and gradients
+                        across Data Pralellel (DP) ranks. (useful only when
+                        `use_megatron_lm` flag is passed).
+  --megatron_lm_gradient_clipping MEGATRON_LM_GRADIENT_CLIPPING
+                        Megatron-LM's gradient clipping value based on global
+                        L2 Norm (0 to disable). (useful only when
+                        `use_megatron_lm` flag is passed).
+
+AWS Arguments:
+  Arguments related to AWS.
+
+  --aws_access_key_id AWS_ACCESS_KEY_ID
+                        The AWS_ACCESS_KEY_ID used to launch the Amazon
+                        SageMaker training job
+  --aws_secret_access_key AWS_SECRET_ACCESS_KEY
+                        The AWS_SECRET_ACCESS_KEY used to launch the Amazon
+                        SageMaker training job.
